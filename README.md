@@ -24,8 +24,17 @@ CurrentConfig.NOTEBOOK_TYPE = NotebookType.JUPYTER_NOTEBOOK
 # pd.set_option('precision', 2)
 
 df = pd.read_csv('E:/data analyze/各地区人口.csv', usecols=['各地区人口', 'Unnamed: 1'])
+#使用 pandas 的 read_csv 方法读取一个 CSV 文件，并将其加载为一个 DataFrame 对象
+#usecols=['各地区人口', 'Unnamed: 1']：指定只读取 CSV 文件中的两列
+
 df.drop(labels=[0, 1], axis=0, inplace=True)
+#从 DataFrame 中删除指定的行
+#labels=[0, 1]：指定要删除的行索引，这里是第 0 行和第 1 行
+#axis=0：指定操作的轴，axis=0 表示按行操作（axis=1 则表示按列操作）
+#inplace=True：表示直接修改原始 DataFrame，而不是返回一个新的 DataFrame
+
 df.rename(columns={'Unnamed: 1':'人口数', '各地区人口':'地区'}, inplace=True)
+#重命名 DataFrame 的列名
 
 dictcode = {'北京': '北京市',
  '天津': '天津市',
@@ -58,6 +67,8 @@ dictcode = {'北京': '北京市',
  '青海': '青海省',
  '宁夏': '宁夏回族自治区',
  '新疆': '新疆维吾尔自治区'}
+#定义了一个 Python 字典（dict），用于存储中国各省级行政单位的简称和全称的映射关系
+#{"Key","Vakue"}
 
 coord = {
     '湖北': [114.31667, 30.51667],
@@ -91,19 +102,35 @@ coord = {
     '云南': [102.73, 25.04],
     '重庆': [106.54, 29.59],
     '青海': [101.74, 36.56]}
+#定义了一个 Python 字典（dict），用于存储中国各省级行政单位的名称及其地理坐标
+
 
 data_pair = []
+#初始化一个空列表 data_pair，用于存储处理后的数据
+
 for idx, row in df.iterrows():
-    name = row['地区'].replace(' ', '')
-    try:
-        value = coord[name]
+#使用 df.iterrows() 遍历 DataFrame 的每一行
+#iterrows() 返回一个迭代器，每行数据以 (index, Series) 的形式返回
+#idx：行的索引（例如 0, 1, 2, ...）
+#row：行的数据，以 Series 形式存储，可以通过列名访问值（例如 row['地区']
+    name = row['地区'].replace(' ', '')   #从当前行的 地区 列获取值，并使用 replace(' ', '') 移除字符串中的所有空格
+    try:  #开始一个 try-except 块，用于捕获可能出现的异常
+        value = coord[name]  #从 coord 字典中获取 name 对应的坐标值
         value.append(float(row['人口数']))
+        #将 row['人口数'] 转换为浮点数（float），并追加到 value 列表中
+        #row['人口数']：从 DataFrame 中获取人口数据，可能是字符串（例如 '21893095'）或数值。
+        #float(row['人口数'])：将人口数据转换为浮点数（例如 21893095.0）。
+        #value.append(...)：将人口数追加到 value 列表中        
         data_pair.append([dictcode[name], value])
-    except KeyError:
-        if name == '现役军人':
-            soldier = row['人口数']
-        elif name == '全国[5]':
-            total = row['人口数']
+        #将 [地区全称, [经度, 纬度, 人口数]] 追加到 data_pair 列表中
+        #dictcode[name]：从 dictcode 字典中获取 name 对应的全称。
+        #例如：dictcode['北京'] = '北京市'。
+        #value：包含经度、纬度和人口数的列表（例如 [116.41667, 39.91667, 21893095.0]）
+    except KeyError:  #捕获 KeyError 异常，处理 name 不在 coord 或 dictcode 字典中的情况
+        if name == '现役军人':  #检查 name 是否为 '现役军人'
+            soldier = row['人口数']    #如果是 '现役军人'，将 row['人口数'] 赋值给变量 soldier
+        elif name == '全国[5]':    #检查 name 是否为 '全国[5]'
+            total = row['人口数']    #如果是 '全国[5]'，将 row['人口数'] 赋值给变量 total
 
 df = pd.read_csv('E:/data analyze/全国人口年龄构成.csv')
 df.drop(labels=[0, 1], axis=0, inplace=True)
