@@ -3,10 +3,24 @@
 from pyecharts.charts import *
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
+#从pyecharts.charts模块中导入所有的内容（此处的*表示为通配符）而此处的pyecharts 是一个基于 ECharts 的 Python 数据可视化库
+#下面两个是从pyecharts导入options模块（对图表进行详细的配置）以及从 pyecharts.commons.utils 模块中导入 JsCode 类（用于在 pyecharts 图表中嵌入 JavaScript 代码）
+
 import pandas as pd
+#导入 pandas 库，pandas 是一个强大的数据处理和分析库，它提供了 DataFrame 和 Series 两种核心数据结构，适合处理表格数据（类似于 Excel 或 SQL 表）
+
 import random
+#random 模块提供了生成随机数的功能
+
 from pyecharts.globals import CurrentConfig, NotebookType,OnlineHostType
+从 pyecharts.globals 模块中导入 CurrentConfig、NotebookType 和 OnlineHostType
+CurrentConfig：一个全局配置对象，用于设置 pyecharts 的运行时参数，例如指定 Notebook 环境、设置在线资源地址等
+NotebookType：一个枚举类，定义了不同的 Notebook 环境类型，例如 Jupyter Notebook 或 Jupyter Lab
+OnlineHostType：一个枚举类，用于指定在线资源的来源（例如 ECharts 的 JavaScript 文件可以从哪个 CDN 加载）
+
 CurrentConfig.NOTEBOOK_TYPE = NotebookType.JUPYTER_NOTEBOOK
+#将 CurrentConfig 的 NOTEBOOK_TYPE 属性设置为 NotebookType.JUPYTER_NOTEBOOK
+设置这个属性后，pyecharts 会调整渲染方式，确保图表能在 Jupyter Notebook 中正确显示（例如生成 HTML 和 JavaScript 代码，并嵌入到 Notebook 的输出单元中）
 # pd.set_option('precision', 2)
 
 df = pd.read_csv('E:/data analyze/各地区人口.csv', usecols=['各地区人口', 'Unnamed: 1'])
