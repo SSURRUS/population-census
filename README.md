@@ -132,16 +132,25 @@ for idx, row in df.iterrows():
         elif name == '全国[5]':    #检查 name 是否为 '全国[5]'
             total = row['人口数']    #如果是 '全国[5]'，将 row['人口数'] 赋值给变量 total
 
-df = pd.read_csv('E:/data analyze/全国人口年龄构成.csv')
-df.drop(labels=[0, 1], axis=0, inplace=True)
+df = pd.read_csv('E:/data analyze/全国人口年龄构成.csv')  #使用 pandas 的 read_csv 函数读取一个 CSV 文件，并将结果存储到变量 df 中
+df.drop(labels=[0, 1], axis=0, inplace=True)  #使用 pandas 的 drop 方法从 DataFrame 中删除指定的行
 
-data_pair_age = []
-for idx, row in df.iterrows():
+data_pair_age = []  #创建一个空列表，命名为 data_pair_age
+for idx, row in df.iterrows():  
+#使用 pandas 的 iterrows() 方法遍历 DataFrame df 的每一行
+#iterrows() 是 pandas 的一个方法，用于逐行迭代 DataFrame。
+#它返回一个生成器，每次迭代产生一个 (index, row) 元组，其中
+#index 是行的索引
+#row 是一个 pandas.Series 对象，表示该行的数据，列名作为 Series 的索引
     data_pair_age.append([row['全国人口年龄构成'].replace('其中：', ''), float(row['Unnamed: 2'])])
+    #从每一行中提取数据，处理后添加到 data_pair_age 列表中
+    #全国人口年龄构成 列（移除“其中：”）和 Unnamed: 2 列（转换为浮点数），组成 [年龄段, 数值] 对，并添加到 data_pair_age 列表中
 
-df = pd.read_csv('E:/data analyze/各地区性别构成.csv')
-df.drop(labels=[0, 1], axis=0, inplace=True)
-data_pair_sex = [('男性', float(df.iloc[0, 1])), ('女性', float(df.iloc[0, 2]))]
+df = pd.read_csv('E:/data analyze/各地区性别构成.csv') #读取 各地区性别构成.csv 文件
+df.drop(labels=[0, 1], axis=0, inplace=True)  #删除前两行（索引 0 和 1）
+data_pair_sex = [('男性', float(df.iloc[0, 1])), ('女性', float(df.iloc[0, 2]))]  
+#从处理后的 DataFrame 的第一行（索引 2）中提取第 1 列和第 2 列的值（转换为浮点数）
+#分别与“男性”和“女性”配对，组成 [('男性', 值), ('女性', 值)] 的列表 data_pair_sex
 
 df = pd.read_csv('E:/data analyze/各地区每10万人口中拥有的各类受教育程度人数.csv')
 df.drop(labels=[0], axis=0, inplace=True)
