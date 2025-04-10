@@ -1,3 +1,5 @@
+下面我会对这些代码进行逐字解析，以方便大家更深入的理解代码以及明白一个完整的数据分析流程
+如需代码可以去主页提取 自述区间仅用于学习
 from pyecharts.charts import *
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
