@@ -1,8 +1,12 @@
+
+
 下面我会对这些代码进行逐字解析，以方便大家更深入的理解代码以及明白一个完整的数据分析流程
 如需代码可以去主页提取 自述区间仅用于学习
+'''
 from pyecharts.charts import *
 from pyecharts import options as opts
 from pyecharts.commons.utils import JsCode
+'''
 #从pyecharts.charts模块中导入所有的内容（此处的*表示为通配符）而此处的pyecharts 是一个基于 ECharts 的 Python 数据可视化库
 #下面两个是从pyecharts导入options模块（对图表进行详细的配置）以及从 pyecharts.commons.utils 模块中导入 JsCode 类（用于在 pyecharts 图表中嵌入 JavaScript 代码）
 
