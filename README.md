@@ -153,18 +153,26 @@ data_pair_sex = [('男性', float(df.iloc[0, 1])), ('女性', float(df.iloc[0, 2
 #分别与“男性”和“女性”配对，组成 [('男性', 值), ('女性', 值)] 的列表 data_pair_sex
 
 df = pd.read_csv('E:/data analyze/各地区每10万人口中拥有的各类受教育程度人数.csv')
+#使用 pandas 的 read_csv 方法读取一个 CSV 文件
 df.drop(labels=[0], axis=0, inplace=True)
+#删除 DataFrame 中 第 0 行（也就是第一行，索引为 0 的那一行
+#axis=0 表示按“行”删除（如果是 axis=1 则表示按“列”删除）
+#inplace=True 表示直接在原始 df 上修改，而不是返回一个新的 DataFrame
+
 data_pair_edu = [
-    ('大学', float(df.iloc[0, 1])/1e3),
+    ('大学', float(df.iloc[0, 1])/1e3),  #('大学', float(df.iloc[0, 1])/1e3)表示每 10 万人中大学学历的人数，除以 1000 得到单位为 百分比
     ('高中', float(df.iloc[0, 2])/1e3),
     ('初中', float(df.iloc[0, 3])/1e3),
     ('小学', float(df.iloc[0, 4])/1e3),
     ('其他', 100-(float(df.iloc[0, 4])+float(df.iloc[0, 3])+float(df.iloc[0, 2])+float(df.iloc[0, 1]))/1e3)
     ]
+    #iloc[0, 1]：用整数位置索引第 0 行第 1 列，表示“某地区的大学学历人口数量（每 10 万人中）
 
 data_pair_edu = [(x, round(y, 2)) for x, y in data_pair_edu]
+#遍历 data_pair_edu 中的每个 (学历名称, 数值) 对
+#使用 round(y, 2) 将数值四舍五入为 小数点后两位
 
-data_pair
+data_pair #临时变量名
 
 chart = Map3D(init_opts=opts.InitOpts(
     width='1000px',
@@ -172,6 +180,7 @@ chart = Map3D(init_opts=opts.InitOpts(
     theme='dark',
     bg_color='#000')
 )
+#创建了一个基础的 3D 地图组件 chart，设定了暗色风格、尺寸、背景颜色等参数，为接下来绘图做准备
 
 # 引用添加的地图
 chart.add_schema(
@@ -199,27 +208,33 @@ chart.add_schema(
         ssao_intensity=1
     )
 )
+#add_schema() 是 Map3D 的方法，用来设置地图的形状、视觉效果、光照、材质、边界等属性。
+#可以理解为：设置地图的“骨架”和外观，而 add() 则是把数据放进去
+
 chart.add(
     "GDP",
     data_pair=data_pair,
-    type_="bar3D",
-    bar_size=1.5,
-    min_height=3,
-    shading="lambert",
+    type_="bar3D", #bar3D 让地图区域上方“长出柱子”，高度表示数值大小
+    bar_size=1.5,  #控制柱子的粗细
+    min_height=3,  #所有柱子的最小高度
+    shading="lambert", #设置光照类型为 lambert（漫反射），可以与 add_schema() 中的光照设置协调，增强真实感
     label_opts=opts.LabelOpts(
-        is_show=False,
+        is_show=False,  #不默认显示文字标签
         formatter=JsCode(
             "function(data){return data.name + ': ' + data.value[2];}"),
     )
 )
-chart.set_global_opts(
-    visualmap_opts=opts.VisualMapOpts(
-        is_show=False,
-        type_='color',
-        dimension=2,
+#将 data_pair 中的数据以 3D 柱状图的形式显示在中国地图上
+#数据图层的名字，图例中会显示为 “GDP”
+
+chart.set_global_opts( #为图表设置全局配置（标题、图例、颜色、视觉映射等）
+    visualmap_opts=opts.VisualMapOpts( #传入一个 VisualMapOpts 对象，定义如何通过颜色表示数值
+        is_show=False, #不显示 visualMap 控件面板
+        type_='color',  #映射类型为 颜色（color）
+        dimension=2,  #指定数据中哪一个维度作为数值维度
         min_=1e7,
-        max_=1e8,
-        range_color=[
+        max_=1e8,  #映射值范围从 1000 万 到 1 亿
+        range_color=[  #这是颜色渐变序列，从低值到高值依次变化
             '#313695',
             '#4575b4',
             '#74add1',
@@ -233,23 +248,23 @@ chart.set_global_opts(
             '#a50026']
     ),
     title_opts=opts.TitleOpts(
-        title="全国各省人口统计",
-        subtitle='数据来自全国第七次人口普查数据，未包含港澳台地区。',
-        pos_left="2%",
-        pos_top='1%',
-        title_textstyle_opts=opts.TextStyleOpts(color='#00BFFF', font_size=20)
+        title="全国各省人口统计",  #设置主标题文字
+        subtitle='数据来自全国第七次人口普查数据，未包含港澳台地区。', #设置副标题
+        pos_left="2%",  #设置标题横向位置：距离图表左边 2%
+        pos_top='1%',   #设置标题纵向位置，距离图表顶部 1%
+        title_textstyle_opts=opts.TextStyleOpts(color='#00BFFF', font_size=20) #设置主标题的文字样式
     ),
-    tooltip_opts=opts.TooltipOpts(is_show=False),
-    legend_opts=opts.LegendOpts(is_show=False),
-    graphic_opts=[
-        opts.GraphicGroup(
-            graphic_item=opts.GraphicItem(id_='1', left="100px", bottom="100px"),
+    tooltip_opts=opts.TooltipOpts(is_show=False), #关闭默认的 tooltip 提示框
+    legend_opts=opts.LegendOpts(is_show=False),  #关闭图例显示，图例通常位于图表右上或底部
+    graphic_opts=[  #ECharts 的自定义图形系统，允许你在图表上添加任意图层或装饰
+        opts.GraphicGroup(  #表示“图形组合”
+            graphic_item=opts.GraphicItem(id_='1', left="100px", bottom="100px"), #left="100px", bottom="100px" 表示将整个组合放在图表画布左下角往右上偏移 100px
             children=[
                 opts.GraphicRect(
                     graphic_item=opts.GraphicItem(
-                        left="center", top="center", z=1
+                        left="center", top="center", z=1  # 表示该矩形位于组合中心
                     ),
-                    graphic_shape_opts=opts.GraphicShapeOpts(
+                    graphic_shape_opts=opts.GraphicShapeOpts( #定义图形的尺寸
                         width=200, height=80
                     ),
                     graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
@@ -259,15 +274,15 @@ chart.set_global_opts(
                         stroke="#fff",
                     ),
                 ),
-                opts.GraphicText(
+                opts.GraphicText( #用于和 GraphicRect（矩形背景）一起组成一个“信息面板”
                     graphic_item=opts.GraphicItem(
-                        left="center", top="center", z=100
+                        left="center", top="center", z=100 #让文本在其父元素（比如一个矩形区域）水平居中
                     ),
-                    graphic_textstyle_opts=opts.GraphicTextStyleOpts(
+                    graphic_textstyle_opts=opts.GraphicTextStyleOpts( #控制文本内容和样式
                         # 要显示的文本
-                        text='全国人口：{:,}\n\n现役军人：{:,}'.format(int(total), int(soldier)),
-                        font="bold italic 14px Microsoft YaHei",
-                        graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
+                        text='全国人口：{:,}\n\n现役军人：{:,}'.format(int(total), int(soldier)), #使用 .format() 方法，将变量 total 和 soldier 格式化为 带千位分隔符的整数
+                        font="bold italic 14px Microsoft YaHei", #设置字体样式
+                        graphic_basicstyle_opts=opts.GraphicBasicStyleOpts( #设置文本颜色
                             fill="#fff"
                         ),
                     ),
@@ -278,7 +293,7 @@ chart.set_global_opts(
     ]
 )
 
-pie = Pie(
+pie = Pie( #设置了初始化参数，包括主题、尺寸和背景色
     init_opts=opts.InitOpts(
         theme='dark',
         width='1000px',
@@ -293,6 +308,11 @@ pie.add(
     # 将饼图尺寸相应缩小，不然饼图会重叠
     radius=["15%", "25%"],
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')
+    formatter='{b}\n{c}%'：
+
+#{b}：显示饼图扇区的名称（即每个分类的名称，如 "18-25岁"）；
+#{c}：显示饼图扇区的数值（如 25，表示百分比值）；
+#\n：换行，确保每个标签内容分为两行显示
 )
 
 pie.add(
@@ -303,6 +323,9 @@ pie.add(
     # 将饼图尺寸相应缩小，不然饼图会重叠
     radius=["15%", "25%"],
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')
+    #{b}：显示饼图扇区的名称（即每个分类的名称，如 "18-25岁"）；
+    #{c}：显示饼图扇区的数值（如 25，表示百分比值）；
+    #\n：换行，确保每个标签内容分为两行显示
 )
 
 pie.add(
@@ -317,7 +340,7 @@ pie.add(
 
 pie.add(
     "",
-    [('城镇', 63.89), ('农村', 36.11)],
+    [('城镇', 63.89), ('农村', 36.11)], #饼图的 数据对（data_pair）。它表示了两个类别的数据和它们对应的百分比
     # 指定饼图中心位置
     center=["20%", "70%"],
     # 将饼图尺寸相应缩小，不然饼图会重叠
@@ -345,9 +368,9 @@ pie.add(
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')
 )
 
-pie.set_global_opts(
-    legend_opts=opts.LegendOpts(is_show=False),
-    title_opts=[dict(text='人口画像', left='2%', top='1%', textStyle=dict(color='#00BFFF', fontSize=20)),
+pie.set_global_opts( #设置图表的 全局配置选项
+    legend_opts=opts.LegendOpts(is_show=False), #配置 图例（legend）的显示与样式
+    title_opts=[dict(text='人口画像', left='2%', top='1%', textStyle=dict(color='#00BFFF', fontSize=20)), #这里设置了多个 标题文本，并分别给它们配置了具体的位置和样式
                 dict(
                     text='年龄 ',
                     left='20%',
@@ -375,19 +398,19 @@ pie.set_global_opts(
                 dict(text='流动 ', left='80%', top='67%', textAlign='center',
                      textStyle=dict(color='#fff', fontWeight='normal', fontSize=15))
                 ],
-    graphic_opts=[
+    graphic_opts=[  #这部分代码设置了 图形元素 (graphic) 的选项
         opts.GraphicGroup(
             graphic_item=opts.GraphicItem(
                 id_='2', left="center", top="40px"),
-            children=[
+            children=[ #这部分代码定义了图形组中的子元素，即实际显示在图表中的图形（例如矩形、文本、线条等）
                 opts.GraphicRect(
                     graphic_item=opts.GraphicItem(
                         left="center", top="center", z=1
                     ),
-                    graphic_shape_opts=opts.GraphicShapeOpts(
+                    graphic_shape_opts=opts.GraphicShapeOpts( #定义了一个 矩形 图形，并配置了它的 位置、尺寸 和 样式
                         width=950, height=320
                     ),
-                    graphic_basicstyle_opts=opts.GraphicBasicStyleOpts(
+                    graphic_basicstyle_opts=opts.GraphicBasicStyleOpts( #定义矩形的宽度和高度
                         fill="rgba(0,0,0,0)",
                         line_width=5,
                         stroke="#fff",
@@ -412,26 +435,27 @@ colors = [
 ]
 random.shuffle(colors)
 pie.set_colors(colors)
+#对饼图的颜色进行 随机打乱，并将打乱后的颜色应用到饼图中
 
 
-page = Page()
-page.add(chart).add(pie)
-page.render('./全国人口画像.html')
-page.render_notebook()
+page = Page() #创建了一个 空的页面实例 page，然后你可以将多个图表添加到这个页面中
+page.add(chart).add(pie) #page.add(...) 方法用于将一个或多个图表添加到页面中
+page.render('./全国人口画像.html') #page.render() 方法用于 渲染并保存页面为 HTML 文件
+page.render_notebook() # 在 Jupyter Notebook 中直接渲染并显示图表
 
-df = pd.read_csv('E:/data analyze/各地区人口.csv')
+df = pd.read_csv('E:/data analyze/各地区人口.csv') #使用 pandas 库中的 read_csv() 函数来读取
 df.drop(labels=[0, 1, 2, 34], axis=0, inplace=True)
 df.columns = ['地区', '人口数', '2020年占比', '2010年占比']
-df['2020年占比'] = df['2020年占比'].astype('float')
+df['2020年占比'] = df['2020年占比'].astype('float') #astype('float') 将 '2020年占比' 列的数据类型转换为浮动类型（float）
 df['2010年占比'] = df['2010年占比'].astype('float')
 df['占比变化'] = df['2020年占比'] - df['2010年占比']
 
-data_pair = []
-for idx, row in df.iterrows():
+data_pair = [] #存储之后要构建的所有数据对
+for idx, row in df.iterrows(): #df.iterrows() 是 pandas DataFrame 中用于遍历 DataFrame 每一行的函数。它返回一个迭代器，每次迭代会返回 行的索引（idx）和 行的数据（row）
     data_pair.append([dictcode[row['地区'].replace(' ', '')], round(row['占比变化'], 2)])
 
-    map_chart = Map(
-        init_opts=opts.InitOpts(
+    map_chart = Map( #创建了一个 Map 类型的图表实例，赋值给变量 map_chart
+        init_opts=opts.InitOpts( #init_opts：这是初始化图表时的配置选项
             theme='dark',
             width='1000px',
             height='700px',
@@ -453,7 +477,7 @@ for idx, row in df.iterrows():
                       }
                   }
                   )
-    map_chart.set_global_opts(
+    map_chart.set_global_opts( #设置了 map_chart 的 全局选项，特别是配置了 视觉映射（VisualMap） 的显示效果
         visualmap_opts=opts.VisualMapOpts(
             is_show=True,
             is_piecewise=True,
@@ -472,6 +496,8 @@ for idx, row in df.iterrows():
                 {'max': -0.1, 'min': -0.2, 'color': '#1E90FF'},
                 {'max': -0.2, 'color': 'blue'}],
         ),
+        #pieces 是一个列表，包含多个字典，每个字典表示 数值区间 对应的颜色
+        
         legend_opts=opts.LegendOpts(is_show=False),
         tooltip_opts=opts.TooltipOpts(
             is_show=True,
@@ -485,6 +511,7 @@ for idx, row in df.iterrows():
             textStyle=dict(
                 color='#00BFFF'))
     )
+    #配置 图表全局选项 的一部分，涉及到图表的 图例（Legend）、提示框（Tooltip） 和 标题（Title） 配置
 
     map_chart.render('2010-2020年各省人口占比变化.html')
     map_chart.render_notebook()
@@ -504,13 +531,13 @@ for idx, row in df.iterrows():
             bg_color='#000')
     )
     bar.add_xaxis(
-        df['地区'].tolist()
+        df['地区'].tolist() #将 DataFrame 中的 "地区" 列转换为一个列表，并作为 x 轴的数据传入
     )
     bar.add_yaxis(
         '0—14岁',
         df['0—14岁'].tolist(),
         stack=1,
-        label_opts=opts.LabelOpts(is_show=True, formatter='{c}%', position='insideLeft'),
+        label_opts=opts.LabelOpts(is_show=True, formatter='{c}%', position='insideLeft'), #配置条形图上显示的标签
         itemstyle_opts={
             'normal': {
                 'shadowColor': 'rgba(0, 0, 0, .5)',  # 阴影颜色
@@ -524,7 +551,7 @@ for idx, row in df.iterrows():
 
     bar.add_yaxis(
         '15—59岁',
-        df['15—59岁'].tolist(),
+        df['15—59岁'].tolist(), #stack=1 表示将这个系列的数据与之前的系列堆叠在一起，构成一个整体的堆叠条形图
         stack=1,
         label_opts=opts.LabelOpts(is_show=True, formatter='{c}%', position='insideLeft'),
         itemstyle_opts={
@@ -564,20 +591,20 @@ for idx, row in df.iterrows():
             # subtitle='数据来自全国第七次人口普查数据，未包含港澳台地区。',
             pos_left="5%",
             pos_top='1%',
-            title_textstyle_opts=opts.TextStyleOpts(color='#00BFFF', font_size=20)
+            title_textstyle_opts=opts.TextStyleOpts(color='#00BFFF', font_size=20) #配置了 标题文本样式，使用了 opts.TextStyleOpts 来设置字体的颜色和大小
         ),
     )
 
-    bar.reversal_axis()
-    bar.set_colors(['orange', 'blue', 'red'])
+    bar.reversal_axis() #反转坐标轴 
+    bar.set_colors(['orange', 'blue', 'red']) #该方法用于设置条形图的颜色
     bar.render('./全国各省人口年龄构成.html')
 
     df = pd.read_csv('E:/data analyze/各地区性别构成.csv')
     df.drop(labels=[0, 1], axis=0, inplace=True)
-    df.columns = ['地区', '女', '男', '性别比']
+    df.columns = ['地区', '女', '男', '性别比'] # 修改 DataFrame df 的列名
     df['男'] = df['男'].astype('float')
     df['女'] = df['女'].astype('float')
-    df.sort_values(by='女', inplace=True)
+    df.sort_values(by='女', inplace=True) #用于对 DataFrame 中的数据按照指定列的值进行排序
 
     bar = Bar(
         init_opts=opts.InitOpts(
@@ -622,7 +649,7 @@ for idx, row in df.iterrows():
     )
 
     bar.set_global_opts(
-        xaxis_opts=opts.AxisOpts(is_show=False, min_=40, max_=60),
+        xaxis_opts=opts.AxisOpts(is_show=False, min_=40, max_=60), #is_show=False：隐藏 X 轴，不显示轴线
         yaxis_opts=opts.AxisOpts(
             axisline_opts=opts.AxisLineOpts(is_show=False),
             axistick_opts=opts.AxisTickOpts(is_show=False)),
@@ -742,10 +769,20 @@ for idx, row in df.iterrows():
 
     bar.set_global_opts(
         xaxis_opts=opts.AxisOpts(is_show=False, max_=100),
+        #xaxis_opts：设置 X 轴的全局属性。
+        #is_show=False：隐藏 X 轴，即不显示 X 轴的轴线、刻度和标签。
+        #max_=100：设置 X 轴的最大值为 100。即使 is_show=False 隐藏了 X 轴，它仍然决定了 X 轴的值域
         yaxis_opts=opts.AxisOpts(
             axisline_opts=opts.AxisLineOpts(is_show=False),
             axistick_opts=opts.AxisTickOpts(is_show=False)),
+           #yaxis_opts：设置 Y 轴的全局属性。
+           #axisline_opts=opts.AxisLineOpts(is_show=False)：隐藏 Y 轴的轴线，不显示 Y 轴的边界线。
+           #axistick_opts=opts.AxisTickOpts(is_show=False)：隐藏 Y 轴的刻度线，不显示 Y 轴的刻度标记。
         legend_opts=opts.LegendOpts(is_show=True, pos_top='1%', pos_right='10%'),
+        #legend_opts：设置图例（legend）的全局属性。
+        #is_show=True：显示图例，图例用于标识图表中各个数据系列的含义。
+        #pos_top='1%'：将图例放置在图表顶部，离顶部 1% 的位置。
+        #pos_right='10%'：将图例放置在图表右侧，离右边 10% 的位置。
         title_opts=opts.TitleOpts(
             title="全国各省人口接受教育程度",
             # subtitle='数据来自全国第七次人口普查数据，未包含港澳台地区。',
@@ -754,8 +791,8 @@ for idx, row in df.iterrows():
             title_textstyle_opts=opts.TextStyleOpts(color='#00BFFF', font_size=20)
         ),
     )
+    #通过设置图表的 标题（title）、标题位置（pos_left 和 pos_top）、以及 标题文本样式（title_textstyle_opts）来调整标题的显示效果
 
     bar.reversal_axis()
     bar.set_colors(['blue', '#1E90FF', '#87CEFA', '#FF69B4', 'red'])
-
     bar.render_notebook()
