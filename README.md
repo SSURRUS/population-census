@@ -2,44 +2,52 @@
 
 ## 下面我会对这些代码进行逐字解析，以方便大家更深入的理解代码以及明白一个完整的数据分析流程<br>
 ## 如需代码可以去主页提取 自述区间仅用于学习 <br>
-
+```
 from pyecharts.charts import * <br>
 from pyecharts import options as opts <br>
 from pyecharts.commons.utils import JsCode <br>
-
+```
 ### 从pyecharts.charts模块中导入所有的内容（此处的*表示为通配符）而此处的pyecharts 是一个基于 ECharts 的 Python 数据可视化库
 ### 下面两个是从pyecharts导入options模块（对图表进行详细的配置）以及从 pyecharts.commons.utils 模块中导入 JsCode 类（用于在 pyecharts 图表中嵌入 JavaScript 代码）
-
+```
 import pandas as pd<br>
+```
 #导入 pandas 库，pandas 是一个强大的数据处理和分析库，它提供了 DataFrame 和 Series 两种核心数据结构，适合处理表格数据（类似于 Excel 或 SQL 表）<br>
-
+```
 import random<br>
+```
 #random 模块提供了生成随机数的功能<br>
-
+```
 from pyecharts.globals import CurrentConfig, NotebookType,OnlineHostType<br>
+```
 从 pyecharts.globals 模块中导入 CurrentConfig、NotebookType 和 OnlineHostType<br>
 CurrentConfig：一个全局配置对象，用于设置 pyecharts 的运行时参数，例如指定 Notebook 环境、设置在线资源地址等<br>
 NotebookType：一个枚举类，定义了不同的 Notebook 环境类型，例如 Jupyter Notebook 或 Jupyter Lab<br>
 OnlineHostType：一个枚举类，用于指定在线资源的来源（例如 ECharts 的 JavaScript 文件可以从哪个 CDN 加载）<br>
-
+```
 CurrentConfig.NOTEBOOK_TYPE = NotebookType.JUPYTER_NOTEBOOK<br>
+```
 #将 CurrentConfig 的 NOTEBOOK_TYPE 属性设置为 NotebookType.JUPYTER_NOTEBOOK<br>
 设置这个属性后，pyecharts 会调整渲染方式，确保图表能在 Jupyter Notebook 中正确显示（例如生成 HTML 和 JavaScript 代码，并嵌入到 Notebook 的输出单元中）<br>
+```
 # pd.set_option('precision', 2)<br>
+```
 
 df = pd.read_csv('E:/data analyze/各地区人口.csv', usecols=['各地区人口', 'Unnamed: 1'])<br>
 #使用 pandas 的 read_csv 方法读取一个 CSV 文件，并将其加载为一个 DataFrame 对象<br>
 #usecols=['各地区人口', 'Unnamed: 1']：指定只读取 CSV 文件中的两列<br>
-
+```
 df.drop(labels=[0, 1], axis=0, inplace=True)<br>
+```
 #从 DataFrame 中删除指定的行<br>
 #labels=[0, 1]：指定要删除的行索引，这里是第 0 行和第 1 行<br>
 #axis=0：指定操作的轴，axis=0 表示按行操作（axis=1 则表示按列操作）<br>
 #inplace=True：表示直接修改原始 DataFrame，而不是返回一个新的 DataFrame<br>
-
+```
 df.rename(columns={'Unnamed: 1':'人口数', '各地区人口':'地区'}, inplace=True)<br>
+```
 #重命名 DataFrame 的列名<br>
-
+```
 dictcode = {'北京': '北京市',<br>
  '天津': '天津市',<br>
  '河北': '河北省',<br>
@@ -69,9 +77,10 @@ dictcode = {'北京': '北京市',<br>
  '青海': '青海省',<br>
  '宁夏': '宁夏回族自治区',<br>
  '新疆': '新疆维吾尔自治区'}<br>
+```
 #定义了一个 Python 字典（dict），用于存储中国各省级行政单位的简称和全称的映射关系<br>
 #{"Key","Vakue"}<br>
-
+```
 coord = {<br>
     '湖北': [114.31667, 30.51667],<br>
     '广东': [113.23333, 23.16667],<br>
@@ -104,17 +113,21 @@ coord = {<br>
     '云南': [102.73, 25.04],<br>
     '重庆': [106.54, 29.59],<br>
     '青海': [101.74, 36.56]}<br>
+```
 #定义了一个 Python 字典（dict），用于存储中国各省级行政单位的名称及其地理坐标<br>
 
-
+```
 data_pair = []<br>
+```
 #初始化一个空列表 data_pair，用于存储处理后的数据<br>
-
+```
 for idx, row in df.iterrows():<br>
+```
 #使用 df.iterrows() 遍历 DataFrame 的每一行<br>
 #iterrows() 返回一个迭代器，每行数据以 (index, Series) 的形式返回<br>
 #idx：行的索引（例如 0, 1, 2, ...）<br>
 #row：行的数据，以 Series 形式存储，可以通过列名访问值（例如 row['地区']<br>
+
     name = row['地区'].replace(' ', '')   #从当前行的 地区 列获取值，并使用 replace(' ', '') 移除字符串中的所有空格<br>
     try:  #开始一个 try-except 块，用于捕获可能出现的异常<br>
         value = coord[name]  #从 coord 字典中获取 name 对应的坐标值<br>
@@ -134,33 +147,41 @@ for idx, row in df.iterrows():<br>
         elif name == '全国[5]':    #检查 name 是否为 '全国[5]' <br>
             total = row['人口数']    #如果是 '全国[5]'，将 row['人口数'] 赋值给变量 total<br>
 
+```
 df = pd.read_csv('E:/data analyze/全国人口年龄构成.csv')  #使用 pandas 的 read_csv 函数读取一个 CSV 文件，并将结果存储到变量 df 中<br>
 df.drop(labels=[0, 1], axis=0, inplace=True)  #使用 pandas 的 drop 方法从 DataFrame 中删除指定的行<br>
+```
 
 data_pair_age = []  #创建一个空列表，命名为 data_pair_age<br>
+```
 for idx, row in df.iterrows():  <br>
+```
 #使用 pandas 的 iterrows() 方法遍历 DataFrame df 的每一行<br>
 #iterrows() 是 pandas 的一个方法，用于逐行迭代 DataFrame。<br>
 #它返回一个生成器，每次迭代产生一个 (index, row) 元组，其中<br>
 #index 是行的索引 <br>
 #row 是一个 pandas.Series 对象，表示该行的数据，列名作为 Series 的索引<br>
+```
     data_pair_age.append([row['全国人口年龄构成'].replace('其中：', ''), float(row['Unnamed: 2'])])<br>
+```
     #从每一行中提取数据，处理后添加到 data_pair_age 列表中<br>
     #全国人口年龄构成 列（移除“其中：”）和 Unnamed: 2 列（转换为浮点数），组成 [年龄段, 数值] 对，并添加到 data_pair_age 列表中<br>
-
+```
 df = pd.read_csv('E:/data analyze/各地区性别构成.csv') #读取 各地区性别构成.csv 文件<br>
 df.drop(labels=[0, 1], axis=0, inplace=True)  #删除前两行（索引 0 和 1）<br>
 data_pair_sex = [('男性', float(df.iloc[0, 1])), ('女性', float(df.iloc[0, 2]))]  <br>
+```
 #从处理后的 DataFrame 的第一行（索引 2）中提取第 1 列和第 2 列的值（转换为浮点数）<br>
 #分别与“男性”和“女性”配对，组成 [('男性', 值), ('女性', 值)] 的列表 data_pair_sex<br>
-
+```
 df = pd.read_csv('E:/data analyze/各地区每10万人口中拥有的各类受教育程度人数.csv')<br>
+```
 #使用 pandas 的 read_csv 方法读取一个 CSV 文件<br>
 df.drop(labels=[0], axis=0, inplace=True)<br>
 #删除 DataFrame 中 第 0 行（也就是第一行，索引为 0 的那一行<br>
 #axis=0 表示按“行”删除（如果是 axis=1 则表示按“列”删除）<br>
 #inplace=True 表示直接在原始 df 上修改，而不是返回一个新的 DataFrame <br>
-
+```
 data_pair_edu = [<br>
     ('大学', float(df.iloc[0, 1])/1e3),  #('大学', float(df.iloc[0, 1])/1e3)表示每 10 万人中大学学历的人数，除以 1000 得到单位为 百分比<br>
     ('高中', float(df.iloc[0, 2])/1e3),<br>
@@ -168,12 +189,14 @@ data_pair_edu = [<br>
     ('小学', float(df.iloc[0, 4])/1e3),<br>
     ('其他', 100-(float(df.iloc[0, 4])+float(df.iloc[0, 3])+float(df.iloc[0, 2])+float(df.iloc[0, 1]))/1e3)<br>
     ]<br>
+```
     #iloc[0, 1]：用整数位置索引第 0 行第 1 列，表示“某地区的大学学历人口数量（每 10 万人中）<br>
-
+```
 data_pair_edu = [(x, round(y, 2)) for x, y in data_pair_edu]<br>
+```
 #遍历 data_pair_edu 中的每个 (学历名称, 数值) 对<br>
 #使用 round(y, 2) 将数值四舍五入为 小数点后两位<br>
-
+```
 data_pair #临时变量名<br>
 
 chart = Map3D(init_opts=opts.InitOpts(<br>
@@ -182,9 +205,11 @@ chart = Map3D(init_opts=opts.InitOpts(<br>
     theme='dark',<br>
     bg_color='#000')<br>
 )<br>
+```
 #创建了一个基础的 3D 地图组件 chart，设定了暗色风格、尺寸、背景颜色等参数，为接下来绘图做准备<br>
 
 # 引用添加的地图<br>
+```
 chart.add_schema(<br>
     maptype="china",<br>
     ground_color='#999',<br>
@@ -210,9 +235,11 @@ chart.add_schema(<br>
         ssao_intensity=1<br>
     )<br>
 )<br>
+```
 #add_schema() 是 Map3D 的方法，用来设置地图的形状、视觉效果、光照、材质、边界等属性。<br>
 #可以理解为：设置地图的“骨架”和外观，而 add() 则是把数据放进去<br>
 
+```
 chart.add(<br>
     "GDP",<br>
     data_pair=data_pair,<br>
@@ -226,9 +253,10 @@ chart.add(<br>
             "function(data){return data.name + ': ' + data.value[2];}"),<br>
     )<br>
 )<br>
+```
 #将 data_pair 中的数据以 3D 柱状图的形式显示在中国地图上<br>
 #数据图层的名字，图例中会显示为 “GDP”<br>
-
+```
 chart.set_global_opts( #为图表设置全局配置（标题、图例、颜色、视觉映射等）<br>
     visualmap_opts=opts.VisualMapOpts( #传入一个 VisualMapOpts 对象，定义如何通过颜色表示数值<br>
         is_show=False, #不显示 visualMap 控件面板<br>
@@ -294,7 +322,8 @@ chart.set_global_opts( #为图表设置全局配置（标题、图例、颜色�
         ),<br>
     ]<br>
 )<br>
-
+```
+```
 pie = Pie( #设置了初始化参数，包括主题、尺寸和背景色<br>
     init_opts=opts.InitOpts(<br><br>
         theme='dark',<br>
@@ -311,12 +340,12 @@ pie.add(<br>
     radius=["15%", "25%"],<br>
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')<br>
     formatter='{b}\n{c}%'：<br>
-
+```
 #{b}：显示饼图扇区的名称（即每个分类的名称，如 "18-25岁"）；<br>
 #{c}：显示饼图扇区的数值（如 25，表示百分比值）；<br>
 #\n：换行，确保每个标签内容分为两行显示<br>
 )<br>
-
+```
 pie.add(<br>
     "",<br>
     data_pair_sex,<br>
@@ -339,7 +368,8 @@ pie.add(<br>
     radius=["15%", "25%"],<br>
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')<br>
 )<br>
-
+```
+```
 pie.add(<br>
     "",<br>
     [('城镇', 63.89), ('农村', 36.11)], #饼图的 数据对（data_pair）。它表示了两个类别的数据和它们对应的百分比<br>
@@ -369,7 +399,8 @@ pie.add(<br>
     radius=["15%", "25%"],<br>
     label_opts=opts.LabelOpts(formatter='{b}\n{c}%')<br>
 )<br>
-
+```
+```
 pie.set_global_opts( #设置图表的 全局配置选项<br>
     legend_opts=opts.LegendOpts(is_show=False), #配置 图例（legend）的显示与样式<br>
     title_opts=[dict(text='人口画像', left='2%', top='1%', textStyle=dict(color='#00BFFF', fontSize=20)), <br>
@@ -438,9 +469,10 @@ colors = [<br>
 ]<br>
 random.shuffle(colors)<br>
 pie.set_colors(colors)<br>
+```
 #对饼图的颜色进行 随机打乱，并将打乱后的颜色应用到饼图中<br>
 
-
+```
 page = Page() #创建了一个 空的页面实例 page，然后你可以将多个图表添加到这个页面中<br>
 page.add(chart).add(pie) #page.add(...) 方法用于将一个或多个图表添加到页面中<br>
 page.render('./全国人口画像.html') #page.render() 方法用于 渲染并保存页面为 HTML 文件<br>
@@ -452,7 +484,8 @@ df.columns = ['地区', '人口数', '2020年占比', '2010年占比']<br>
 df['2020年占比'] = df['2020年占比'].astype('float') #astype('float') 将 '2020年占比' 列的数据类型转换为浮动类型（float）<br>
 df['2010年占比'] = df['2010年占比'].astype('float')<br>
 df['占比变化'] = df['2020年占比'] - df['2010年占比']<br>
-
+```
+```
 data_pair = [] #存储之后要构建的所有数据对<br>
 for idx, row in df.iterrows(): #df.iterrows() 是 pandas DataFrame 中用于遍历 DataFrame 每一行的函数。它返回一个迭代器，每次迭代会返回 行的索引（idx）和 行的数据（row）<br>
     data_pair.append([dictcode[row['地区'].replace(' ', '')], round(row['占比变化'], 2)])<br>
@@ -498,7 +531,9 @@ for idx, row in df.iterrows(): #df.iterrows() 是 pandas DataFrame 中用于遍�
                 {'max': -0.1, 'min': -0.2, 'color': '#1E90FF'},<br>
                 {'max': -0.2, 'color': 'blue'}],<br>
         ),<br>
+
         #pieces 是一个列表，包含多个字典，每个字典表示 数值区间 对应的颜色<br>
+
         legend_opts=opts.LegendOpts(is_show=False),<br>
         tooltip_opts=opts.TooltipOpts(<br>
             is_show=True,<br>
