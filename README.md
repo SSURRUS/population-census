@@ -31,9 +31,8 @@ CurrentConfig.NOTEBOOK_TYPE = NotebookType.JUPYTER_NOTEBOOK
 设置这个属性后，pyecharts 会调整渲染方式，确保图表能在 Jupyter Notebook 中正确显示（例如生成 HTML 和 JavaScript 代码，并嵌入到 Notebook 的输出单元中）<br>
 ```
 # pd.set_option('precision', 2)
+df = pd.read_csv('E:/data analyze/各地区人口.csv', usecols=['各地区人口', 'Unnamed: 1'])
 ```
-
-df = pd.read_csv('E:/data analyze/各地区人口.csv', usecols=['各地区人口', 'Unnamed: 1'])<br>
 #使用 pandas 的 read_csv 方法读取一个 CSV 文件，并将其加载为一个 DataFrame 对象<br>
 #usecols=['各地区人口', 'Unnamed: 1']：指定只读取 CSV 文件中的两列<br>
 ```
